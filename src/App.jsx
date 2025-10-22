@@ -11,6 +11,7 @@ import Checkout from './pages/Checkout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Orders from './pages/Orders';
+import ProductDetail from './pages/ProductDetail';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/productos" element={<Products />} />
+                  <Route path="/productos/:id" element={<ProductDetail />} />
                   <Route path="/carrito" element={<Cart />} />
                   <Route path="/checkout" element={<Checkout />} />
                   <Route path="/login" element={<Login />} />
