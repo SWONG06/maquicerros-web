@@ -1,122 +1,106 @@
-import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
-import CartItem from '../components/CartItem';
+import { useCart } from "../context/CartContext";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { cart, getTotal, clearCart } = useCart();
-  const { isAuthenticated } = useAuth();
-
-  const subtotal = getTotal();
-  const shipping = subtotal > 100 ? 0 : 15.99;
-  const total = subtotal + shipping;
+  const { cart, removeFromCart, updateQuantity, clearCart, total } = useCart();
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <div className="text-6xl mb-4">🛒</div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Tu carrito está vacío
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
-              ¡Agrega algunos productos para comenzar tu compra!
-            </p>
-            <Link
-              to="/productos"
-              className="inline-block bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-200"
-            >
-              Explorar Productos
-            </Link>
-          </div>
-        </div>
+      <div className="min-h-screen flex flex-col items-center justify-center text-center">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+          Tu carrito está vacío 🛒
+        </h2>
+        <Link
+          to="/productos"
+          className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition"
+        >
+          Ver productos
+        </Link>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-6 sm:px-12">
+      <div className="max-w-5xl mx-auto bg-white dark:bg-secondary p-8 rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-          Carrito de Compras
+          🛍️ Carrito de compras
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cart Items */}
-          <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-secondary rounded-lg shadow-md p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Productos ({cart.length})
-                </h2>
+        {/* Lista de productos */}
+        <div className="space-y-6">
+          {cart.map((item) => (
+            <div
+              key={item.id}
+              className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-700 pb-4"
+            >
+              <img
+                src={item.imageUrl || item.image || "/placeholder-product.jpg"}
+                alt={item.name}
+                className="w-24 h-24 object-cover rounded-md"
+              />
+
+              <div className="flex-1 text-center sm:text-left">
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
+                  {item.name}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  S/ {item.price.toFixed(2)}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={clearCart}
-                  className="text-red-500 hover:text-red-700 transition-colors duration-200 text-sm font-medium"
+                  onClick={() =>
+                    updateQuantity(item.id, Math.max(1, item.quantity - 1))
+                  }
+                  className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-md"
                 >
-                  Vaciar carrito
+                  -
+                </button>
+                <span className="text-lg text-gray-900 dark:text-white">
+                  {item.quantity}
+                </span>
+                <button
+                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                  className="px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded-md"
+                >
+                  +
                 </button>
               </div>
-              <div className="space-y-4">
-                {cart.map((item) => (
-                  <CartItem key={item.id} item={item} />
-                ))}
-              </div>
-            </div>
-          </div>
 
-          {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-secondary rounded-lg shadow-md p-6 sticky top-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                Resumen del Pedido
-              </h2>
+              <p className="text-lg font-semibold text-primary">
+                S/ {(item.price * item.quantity).toFixed(2)}
+              </p>
 
-              <div className="space-y-3 mb-6">
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                  <span>Subtotal</span>
-                  <span>S/ {subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-gray-600 dark:text-gray-400">
-                  <span>Envío</span>
-                  <span>{shipping === 0 ? 'Gratis' : `S/ ${shipping.toFixed(2)}`}</span>
-                </div>
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
-                  <div className="flex justify-between text-lg font-semibold text-gray-900 dark:text-white">
-                    <span>Total</span>
-                    <span>S/ {total.toFixed(2)}</span>
-                  </div>
-                </div>
-              </div>
-
-              {isAuthenticated ? (
-                <Link
-                  to="/checkout"
-                  className="w-full bg-primary hover:bg-primary/90 text-white py-3 px-4 rounded-lg font-semibold text-center block transition-colors duration-200"
-                >
-                  Proceder al Pago
-                </Link>
-              ) : (
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-                    Debes iniciar sesión para continuar
-                  </p>
-                  <Link
-                    to="/login"
-                    className="w-full bg-primary hover:bg-primary/90 text-white py-3 px-4 rounded-lg font-semibold text-center block transition-colors duration-200"
-                  >
-                    Iniciar Sesión
-                  </Link>
-                </div>
-              )}
-
-              <Link
-                to="/productos"
-                className="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-900 dark:text-white py-3 px-4 rounded-lg font-semibold text-center block mt-3 transition-colors duration-200"
+              <button
+                onClick={() => removeFromCart(item.id)}
+                className="text-red-500 hover:underline"
               >
-                Continuar Comprando
-              </Link>
+                Eliminar
+              </button>
             </div>
+          ))}
+        </div>
+
+        {/* Total y botones */}
+        <div className="mt-10 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Total: S/ {total.toFixed(2)}
+          </h2>
+          <div className="flex gap-4">
+            <button
+              onClick={clearCart}
+              className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium"
+            >
+              Vaciar carrito
+            </button>
+            <Link
+              to="/checkout"
+              className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium"
+            >
+              Continuar al pago
+            </Link>
           </div>
         </div>
       </div>

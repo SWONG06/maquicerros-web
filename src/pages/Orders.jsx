@@ -1,51 +1,70 @@
 import { useEffect, useState } from "react";
+import { useLocation, Link } from "react-router-dom";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const location = useLocation();
 
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`);
-        const data = await res.json();
-        setOrders(data);
-      } catch (error) {
-        console.error("❌ Error al cargar órdenes:", error);
-      }
-    };
-    fetchOrders();
+    const savedOrders = JSON.parse(localStorage.getItem("orders")) || [];
+    setOrders(savedOrders);
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-        Mis Pedidos
-      </h1>
-      {orders.length === 0 ? (
-        <p className="text-gray-500 dark:text-gray-400">
-          Aún no tienes pedidos realizados 🛒
-        </p>
-      ) : (
-        <ul className="space-y-4">
-          {orders.map((order) => (
-            <li
-              key={order.id}
-              className="bg-white dark:bg-secondary rounded-lg p-4 shadow"
-            >
-              <h2 className="font-semibold text-gray-900 dark:text-white">
-                Orden #{order.id}
-              </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Estado: <strong>{order.status}</strong> | Pago:{" "}
-                <strong>{order.paymentStatus}</strong>
-              </p>
-              <p className="text-primary font-semibold mt-2">
-                Total: S/ {order.total.toFixed(2)}
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-6 sm:px-12">
+      <div className="max-w-5xl mx-auto bg-white dark:bg-secondary p-8 rounded-lg shadow-lg">
+        {location.state?.orderSuccess && (
+          <div className="bg-green-100 text-green-700 p-4 rounded-md mb-6">
+            ✅ Pedido realizado con éxito
+          </div>
+        )}
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
+          🧾 Mis pedidos
+        </h1>
+        {orders.length === 0 ? (
+          <p className="text-gray-600 dark:text-gray-300">
+            No tienes pedidos aún.
+          </p>
+        ) : (
+          <div className="space-y-6">
+            {orders.map((order) => (
+              <div
+                key={order.id}
+                className="border border-gray-200 dark:border-gray-700 rounded-lg p-4"
+              >
+                <div className="flex justify-between mb-2">
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    Pedido #{order.id}
+                  </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">
+                    {order.date}
+                  </span>
+                </div>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Total:{" "}
+                  <span className="font-semibold text-primary">
+                    S/ {order.total.toFixed(2)}
+                  </span>
+                </p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Método de pago: {order.paymentMethod}
+                </p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Dirección: {order.address}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="mt-8">
+          <Link
+            to="/productos"
+            className="bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium"
+          >
+            Seguir comprando
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };
