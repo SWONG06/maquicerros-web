@@ -8,6 +8,22 @@ const Orders = () => {
   const location = useLocation();
   const orderSuccess = location.state?.orderSuccess || false;
 
+  // Función para asignar color según estado
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "created":
+        return "bg-yellow-100 text-yellow-700 border-yellow-400";
+      case "processing":
+        return "bg-blue-100 text-blue-700 border-blue-400";
+      case "completed":
+        return "bg-green-100 text-green-700 border-green-400";
+      case "cancelled":
+        return "bg-red-100 text-red-700 border-red-400";
+      default:
+        return "bg-gray-100 text-gray-600 border-gray-300";
+    }
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
       const result = await getOrders();
@@ -44,19 +60,35 @@ const Orders = () => {
                 key={order.id}
                 className="border border-gray-300 dark:border-gray-700 rounded-lg p-6 hover:shadow-md transition"
               >
-                <div className="flex justify-between flex-wrap">
-                  <h2 className="font-semibold text-lg text-gray-800 dark:text-white">
-                    Pedido #{order.id}
-                  </h2>
-                  <span className="text-sm text-gray-500">
-                    {new Date(order.createdAt).toLocaleString()}
+                <div className="flex justify-between flex-wrap items-start gap-3">
+                  <div>
+                    <h2 className="font-semibold text-lg text-gray-800 dark:text-white">
+                      Pedido #{order.id}
+                    </h2>
+                    <p className="text-sm text-gray-500">
+                      {new Date(order.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+
+                  {/* 🏷️ Estado del pedido */}
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
+                      order.status
+                    )}`}
+                  >
+                    {order.status === "created" && "🕓 Pendiente"}
+                    {order.status === "processing" && "🔧 En proceso"}
+                    {order.status === "completed" && "✅ Completado"}
+                    {order.status === "cancelled" && "❌ Cancelado"}
                   </span>
                 </div>
+
                 <p className="mt-2 text-gray-600 dark:text-gray-300">
                   <strong>Total:</strong> S/ {order.total?.toFixed(2)} <br />
                   <strong>Método:</strong> {order.paymentMethod} <br />
                   <strong>Dirección:</strong> {order.address}
                 </p>
+
                 {order.items && (
                   <div className="mt-3">
                     <strong className="text-gray-700 dark:text-gray-300">
