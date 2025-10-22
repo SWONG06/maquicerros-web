@@ -1,36 +1,23 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import CategoryCard from "../components/CategoryCard";
+import { fetchProducts } from "../services/api";
 import ProductCard from "../components/ProductCard";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🌐 Usa variable de entorno (para local y producción)
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-  console.log("🌍 VITE_API_URL:", import.meta.env.VITE_API_URL);
-
-
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/products`);
-        const data = await res.json();
-        setProducts(data.data || []);
-      } catch (error) {
-        console.error("❌ Error al cargar productos:", error);
-      } finally {
-        setLoading(false);
-      }
+    const loadProducts = async () => {
+      const data = await fetchProducts();
+      setProducts(data);
+      setLoading(false);
     };
-
-    fetchProducts();
-  }, [API_URL]);
+    loadProducts();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      {/* Hero Banner */}
       <section className="bg-linear-to-r from-primary to-orange-600 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
@@ -48,7 +35,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Productos Reales */}
       <section className="py-16 bg-white dark:bg-secondary">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-12">
