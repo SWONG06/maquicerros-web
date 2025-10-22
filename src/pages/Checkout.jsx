@@ -1,6 +1,7 @@
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { createOrder } from "../services/orders";
 
 const Checkout = () => {
   const { cart, total, clearCart } = useCart();
@@ -14,17 +15,12 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const API_URL =
-    import.meta.env.VITE_API_URL?.trim().replace(/\/$/, "") ||
-    "https://maquicerros-backend.onrender.com";
-
+  // 🔹 Manejar cambios en inputs
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // 🔹 Enviar pedido al backend
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -37,7 +33,6 @@ const Checkout = () => {
     setLoading(true);
 
     try {
-      // 🔹 Crear objeto del pedido
       const orderData = {
         name: formData.name,
         email: formData.email,
@@ -52,31 +47,24 @@ const Checkout = () => {
         total,
       };
 
-      // 🔹 Enviar pedido al backend
-      const res = await fetch(`${API_URL}/api/orders`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderData),
-      });
+      // ✅ Enviar al backend mediante servicio
+      const response = await createOrder(orderData);
 
-      const data = await res.json();
-
-      if (data.success) {
-        // ✅ Si el pedido se creó correctamente en la BD
+      if (response.success) {
         clearCart();
         navigate("/pedidos", { state: { orderSuccess: true } });
       } else {
-        console.error("Error backend:", data);
-        setError("❌ Hubo un error al crear el pedido en el servidor.");
+        setError(response.message || "❌ No se pudo registrar el pedido.");
       }
     } catch (err) {
-      console.error("Error de conexión:", err);
-      setError("❌ No se pudo conectar con el servidor.");
+      console.error("❌ Error:", err);
+      setError("Error al conectar con el servidor.");
     } finally {
       setLoading(false);
     }
   };
 
+  // 🛒 Si el carrito está vacío
   if (cart.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center">
@@ -95,7 +83,7 @@ const Checkout = () => {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {/* 🧍 Información del comprador */}
+          {/* 🧍 Datos del comprador */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Datos de envío
@@ -114,7 +102,7 @@ const Checkout = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 outline-none transition"
                 required
               />
             </div>
@@ -128,7 +116,7 @@ const Checkout = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 outline-none transition"
                 required
               />
             </div>
@@ -142,7 +130,7 @@ const Checkout = () => {
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 outline-none transition"
                 required
               />
             </div>
@@ -155,7 +143,7 @@ const Checkout = () => {
                 name="paymentMethod"
                 value={formData.paymentMethod}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 outline-none transition"
               >
                 <option value="tarjeta">Tarjeta de crédito / débito</option>
                 <option value="yape">Yape / Plin</option>
@@ -166,7 +154,7 @@ const Checkout = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-md font-medium transition disabled:opacity-50"
+              className="w-full bg-orange-600 hover:bg-orange-500 text-white px-4 py-3 rounded-md font-medium transition disabled:opacity-50"
             >
               {loading ? "Procesando..." : "Finalizar pedido"}
             </button>
@@ -191,7 +179,7 @@ const Checkout = () => {
                       x{item.quantity}
                     </p>
                   </div>
-                  <p className="font-semibold text-primary">
+                  <p className="font-semibold text-orange-600">
                     S/ {(item.price * item.quantity).toFixed(2)}
                   </p>
                 </div>
