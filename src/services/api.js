@@ -6,7 +6,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL?.trim().replace(/\/$/, '') || 
 // =======================
 export const authAPI = {
   login: async (email, password) => {
-    const res = await fetch(`${API_BASE_URL}/auth/login`, {
+    const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -15,7 +15,7 @@ export const authAPI = {
   },
 
   register: async (name, email, password) => {
-    const res = await fetch(`${API_BASE_URL}/auth/register`, {
+    const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -24,7 +24,7 @@ export const authAPI = {
   },
 
   logout: async (token) => {
-    const res = await fetch(`${API_BASE_URL}/auth/logout`, {
+    const res = await fetch(`${API_BASE_URL}/api/auth/logout`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -37,12 +37,12 @@ export const authAPI = {
 // =======================
 export const productsAPI = {
   getAll: async () => {
-    const res = await fetch(`${API_BASE_URL}/products`);
+    const res = await fetch(`${API_BASE_URL}/api/products`);
     return res.json();
   },
 
   getById: async (id) => {
-    const res = await fetch(`${API_BASE_URL}/products/${id}`);
+    const res = await fetch(`${API_BASE_URL}/api/products/${id}`);
     return res.json();
   },
 };
@@ -52,12 +52,12 @@ export const productsAPI = {
 // =======================
 export const cartAPI = {
   getCart: async (userId) => {
-    const res = await fetch(`${API_BASE_URL}/cart/${userId}`);
+    const res = await fetch(`${API_BASE_URL}/api/cart/${userId}`);
     return res.json();
   },
 
   addToCart: async (productId, quantity) => {
-    const res = await fetch(`${API_BASE_URL}/cart`, {
+    const res = await fetch(`${API_BASE_URL}/api/cart`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ productId, quantity }),
@@ -66,7 +66,7 @@ export const cartAPI = {
   },
 
   updateCartItem: async (itemId, quantity) => {
-    const res = await fetch(`${API_BASE_URL}/cart/${itemId}`, {
+    const res = await fetch(`${API_BASE_URL}/api/cart/${itemId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ quantity }),
@@ -75,7 +75,7 @@ export const cartAPI = {
   },
 
   removeFromCart: async (itemId) => {
-    const res = await fetch(`${API_BASE_URL}/cart/${itemId}`, {
+    const res = await fetch(`${API_BASE_URL}/api/cart/${itemId}`, {
       method: "DELETE",
     });
     return res.json();
@@ -87,12 +87,12 @@ export const cartAPI = {
 // =======================
 export const ordersAPI = {
   getOrders: async () => {
-    const res = await fetch(`${API_BASE_URL}/orders`);
+    const res = await fetch(`${API_BASE_URL}/api/orders`);
     return res.json();
   },
 
   createOrder: async (orderData) => {
-    const res = await fetch(`${API_BASE_URL}/orders`, {
+    const res = await fetch(`${API_BASE_URL}/api/orders`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(orderData),
@@ -106,7 +106,7 @@ export const ordersAPI = {
 // =======================
 export const paymentsAPI = {
   createStripeIntent: async (amount) => {
-    const res = await fetch(`${API_BASE_URL}/payments/stripe-intent`, {
+    const res = await fetch(`${API_BASE_URL}/api/payments/stripe-intent`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ amount }),
@@ -119,7 +119,7 @@ export const paymentsAPI = {
     formData.append("orderId", orderId);
     formData.append("voucher", file);
 
-    const res = await fetch(`${API_BASE_URL}/payments/upload-voucher`, {
+    const res = await fetch(`${API_BASE_URL}/api/payments/upload-voucher`, {
       method: "POST",
       body: formData,
     });
