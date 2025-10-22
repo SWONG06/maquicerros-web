@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Orders from './pages/Orders';
 import ProductDetail from './pages/ProductDetail';
+import OrderSuccess from "./pages/OrderSuccess";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/registro" element={<Register />} />
                   <Route path="/pedidos" element={<Orders />} />
+                  <Route path="/pedidos" element={<OrderSuccess />} />
                 </Routes>
               </main>
               <Footer />
