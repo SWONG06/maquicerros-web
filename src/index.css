@@ -1,0 +1,54 @@
+/* Importa Tailwind */
+@import "tailwindcss";
+
+/* ESTILOS GLOBALES */
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300;
+  }
+
+  /* Mejor tipografía */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+/* COMPONENTES GLOBALES */
+@layer components {
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 transition-colors duration-300;
+  }
+
+  .input {
+    @apply w-full px-4 py-2 rounded-lg border border-gray-300
+           dark:border-gray-600 bg-white dark:bg-gray-800
+           text-gray-900 dark:text-gray-100
+           focus:ring-2 focus:ring-orange-500 focus:outline-none;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 
+           text-white font-semibold transition;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300
+           dark:bg-gray-700 dark:hover:bg-gray-600
+           text-gray-900 dark:text-gray-100 transition;
+  }
+}
+
+/* UTILIDADES EXTRA */
+@layer utilities {
+  .shadow-soft {
+    @apply shadow-lg shadow-black/5 dark:shadow-black/20;
+  }
+}

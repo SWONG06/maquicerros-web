@@ -1,0 +1,242 @@
+[
+  {
+    "id": 1,
+    "name": "Taladro Percutor Makita 750W",
+    "price": 379,
+    "stock": 12,
+    "imageUrl": "/products/taladro.png",
+    "category": "electricas"
+  },
+  {
+    "id": 2,
+    "name": "Amoladora Angular Bosch 900W",
+    "price": 249,
+    "stock": 15,
+    "imageUrl": "/products/amoladora.png",
+    "category": "electricas"
+  },
+  {
+    "id": 3,
+    "name": "Sierra Circular Dewalt 1800W",
+    "price": 699,
+    "stock": 7,
+    "imageUrl": "/products/sierra.png",
+    "category": "electricas"
+  },
+  {
+    "id": 4,
+    "name": "Atornillador Inalámbrico Makita 18V",
+    "price": 299,
+    "stock": 20,
+    "imageUrl": "/products/atornillador.png",
+    "category": "electricas"
+  },
+  {
+    "id": 5,
+    "name": "Pulidora Eléctrica Stanley 600W",
+    "price": 310,
+    "stock": 10,
+    "imageUrl": "/products/pulidora.png",
+    "category": "electricas"
+  },
+  {
+    "id": 6,
+    "name": "Caladora Bosch Profesional 650W",
+    "price": 289,
+    "stock": 9,
+    "imageUrl": "/products/caladora.png",
+    "category": "electricas"
+  },
+  {
+    "id": 7,
+    "name": "Rotomartillo SDS Plus Dewalt",
+    "price": 520,
+    "stock": 6,
+    "imageUrl": "/products/rotomartillo.png",
+    "category": "electricas"
+  },
+  {
+    "id": 8,
+    "name": "Pistola de Calor Black+Decker",
+    "price": 149,
+    "stock": 18,
+    "imageUrl": "/products/pistola_calor.png",
+    "category": "electricas"
+  },
+  {
+    "id": 9,
+    "name": "Multiherramienta Dremel 3000",
+    "price": 399,
+    "stock": 8,
+    "imageUrl": "/products/dremel.png",
+    "category": "electricas"
+  },
+  {
+    "id": 10,
+    "name": "Lijadora Orbital Makita",
+    "price": 240,
+    "stock": 11,
+    "imageUrl": "/products/lijadora.png",
+    "category": "electricas"
+  },
+  {
+    "id": 11,
+    "name": "Compresora Trifásica 50L Industrial",
+    "price": 899,
+    "stock": 5,
+    "imageUrl": "/products/compresora.png",
+    "category": "maquinaria"
+  },
+  {
+    "id": 12,
+    "name": "Generador Eléctrico Hyundai 5500W",
+    "price": 1990,
+    "stock": 4,
+    "imageUrl": "/products/generador.png",
+    "category": "maquinaria"
+  },
+  {
+    "id": 13,
+    "name": "Soldadora Inversora 200A Gladiator",
+    "price": 650,
+    "stock": 9,
+    "imageUrl": "/products/soldadora.png",
+    "category": "maquinaria"
+  },
+  {
+    "id": 14,
+    "name": "Motobomba Honda 2 pulgadas",
+    "price": 1299,
+    "stock": 7,
+    "imageUrl": "/products/motobomba.png",
+    "category": "maquinaria"
+  },
+  {
+    "id": 15,
+    "name": "Plato Compactador a Gasolina",
+    "price": 2200,
+    "stock": 3,
+    "imageUrl": "/products/compactador.png",
+    "category": "maquinaria"
+  },
+  {
+    "id": 16,
+    "name": "Hormigonera Industrial 180L",
+    "price": 2800,
+    "stock": 2,
+    "imageUrl": "/products/hormigonera.png",
+    "category": "maquinaria"
+  },
+  {
+    "id": 17,
+    "name": "Cortadora de Concreto Gladiator 14”",
+    "price": 3500,
+    "stock": 2,
+    "imageUrl": "/products/cortadora_concreto.png",
+    "category": "maquinaria"
+  },
+  {
+    "id": 18,
+    "name": "Hidrolavadora Industrial Kärcher",
+    "price": 1800,
+    "stock": 4,
+    "imageUrl": "/products/hidrolavadora.png",
+    "category": "maquinaria"
+  },
+  {
+    "id": 19,
+    "name": "Torre de Iluminación LED 3600W",
+    "price": 4900,
+    "stock": 1,
+    "imageUrl": "/products/torre_luz.png",
+    "category": "maquinaria"
+  },
+  {
+    "id": 20,
+    "name": "Vibrador para Concreto Eléctrico",
+    "price": 980,
+    "stock": 6,
+    "imageUrl": "/products/vibrador.png",
+    "category": "maquinaria"
+  },
+  {
+    "id": 21,
+    "name": "Disco de Corte Metal 4.5” Bosch",
+    "price": 12,
+    "stock": 50,
+    "imageUrl": "/products/disco_corte.png",
+    "category": "accesorios"
+  },
+  {
+    "id": 22,
+    "name": "Brocas para Concreto SDS Plus (Set 5)",
+    "price": 45,
+    "stock": 30,
+    "imageUrl": "/products/brocas.png",
+    "category": "accesorios"
+  },
+  {
+    "id": 23,
+    "name": "Lija para Madera Grano 120",
+    "price": 4,
+    "stock": 200,
+    "imageUrl": "/products/lija.png",
+    "category": "accesorios"
+  },
+  {
+    "id": 24,
+    "name": "Carbón para Amoladora (Par)",
+    "price": 18,
+    "stock": 70,
+    "imageUrl": "/products/carbon.png",
+    "category": "accesorios"
+  },
+  {
+    "id": 25,
+    "name": "Boquilla para Hidrolavadora 25°",
+    "price": 35,
+    "stock": 15,
+    "imageUrl": "/products/boquilla.png",
+    "category": "accesorios"
+  },
+  {
+    "id": 26,
+    "name": "Cinta Métrica de 5 metros",
+    "price": 22,
+    "stock": 40,
+    "imageUrl": "/products/cinta_metrica.png",
+    "category": "accesorios"
+  },
+  {
+    "id": 27,
+    "name": "Guantes de Seguridad Anticorte",
+    "price": 28,
+    "stock": 60,
+    "imageUrl": "/products/guantes.png",
+    "category": "accesorios"
+  },
+  {
+    "id": 28,
+    "name": "Casco de Seguridad Industrial",
+    "price": 49,
+    "stock": 25,
+    "imageUrl": "/products/casco.png",
+    "category": "accesorios"
+  },
+  {
+    "id": 29,
+    "name": "Mascarilla con Filtro Carbon Activado",
+    "price": 32,
+    "stock": 50,
+    "imageUrl": "/products/mascarilla.png",
+    "category": "accesorios"
+  },
+  {
+    "id": 30,
+    "name": "Juego de Llaves Allen 10 piezas",
+    "price": 44,
+    "stock": 35,
+    "imageUrl": "/products/llaves_allen.png",
+    "category": "accesorios"
+  }
+]
