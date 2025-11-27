@@ -1,152 +1,84 @@
-import { lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from "react-router-dom";
 
-import { AuthProvider } from './context/AuthContext';
-import { CartProvider } from './context/CartContext';
-import { ThemeProvider } from './context/ThemeContext';
-import { ToastProvider } from './context/ToastContext';
+import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
+import { OrdersProvider } from "./context/OrdersContext";
 
-import ErrorBoundary from './components/ErrorBoundary';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import Loading from './components/Loading';
-import PrivateRoute from "./components/PrivateRoute";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
-// 🔥 Lazy-loaded pages
-const Home = lazy(() => import('./pages/Home'));
-const Products = lazy(() => import('./pages/Products'));
-const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+import Home from "./pages/Home";
+import Products from "./pages/Products";
+import ProductDetail from "./pages/ProductDetail";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Orders from "./pages/Orders";
 
-const Cart = lazy(() => import('./pages/Cart'));
-const Checkout = lazy(() => import('./pages/Checkout'));
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Perfil from "./pages/Perfil";
 
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-
-const Orders = lazy(() => import('./pages/Orders'));
-const OrderSuccess = lazy(() => import('./pages/CheckoutSuccess'));
-
-const Perfil = lazy(() => import('./pages/Perfil'));
-
-// Admin (opcional)
-const AdminOrders = lazy(() => import('./pages/AdminOrders'));
-const AdminProducts = lazy(() => import('./pages/AdminProducts'));
-const AdminAddProduct = lazy(() => import('./pages/AdminAddProduct'));
-const AdminEditProduct = lazy(() => import('./pages/AdminEditProduct'));
-
-const NotFound = lazy(() => import('./pages/NotFound'));
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <ErrorBoundary>
-        <ToastProvider>
-          <AuthProvider>
-            <CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <OrdersProvider>
 
-              <Router>
-                <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+          <Navbar />
 
-                  <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
 
-                  <main>
-                    <Suspense fallback={<Loading size="lg" text="Cargando página..." />}>
+            <Route path="/productos" element={<Products />} />
+            <Route path="/productos/:id" element={<ProductDetail />} />
 
-                      <Routes>
-                        {/* PÚBLICAS */}
-                        <Route path="/" element={<Home />} />
-                        <Route path="/productos" element={<Products />} />
-                        <Route path="/productos/:id" element={<ProductDetail />} />
+            <Route
+              path="/carrito"
+              element={
+                <ProtectedRoute>
+                  <Cart />
+                </ProtectedRoute>
+              }
+            />
 
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
+            <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute>
+                  <Checkout />
+                </ProtectedRoute>
+              }
+            />
 
-                        {/* Carrito es público */}
-                        <Route path="/carrito" element={<Cart />} />
+            <Route
+              path="/pedidos"
+              element={
+                <ProtectedRoute>
+                  <Orders />
+                </ProtectedRoute>
+              }
+            />
 
-                        {/* PRIVADAS */}
-                        <Route
-                          path="/perfil"
-                          element={
-                            <PrivateRoute>
-                              <Perfil />
-                            </PrivateRoute>
-                          }
-                        />
+            <Route
+              path="/perfil"
+              element={
+                <ProtectedRoute>
+                  <Perfil />
+                </ProtectedRoute>
+              }
+            />
 
-                        <Route
-                          path="/checkout"
-                          element={
-                            <PrivateRoute>
-                              <Checkout />
-                            </PrivateRoute>
-                          }
-                        />
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Register />} />
+          </Routes>
 
-                        <Route
-                          path="/pedidos"
-                          element={
-                            <PrivateRoute>
-                              <Orders />
-                            </PrivateRoute>
-                          }
-                        />
+          <Footer />
 
-                        <Route path="/pedido-exitoso" element={<OrderSuccess />} />
-
-                        {/* ADMIN (solo si luego deseas activarlo) */}
-                        <Route
-                          path="/admin"
-                          element={
-                            <PrivateRoute adminOnly>
-                              <AdminOrders />
-                            </PrivateRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/productos"
-                          element={
-                            <PrivateRoute adminOnly>
-                              <AdminProducts />
-                            </PrivateRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/productos/nuevo"
-                          element={
-                            <PrivateRoute adminOnly>
-                              <AdminAddProduct />
-                            </PrivateRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/productos/editar/:id"
-                          element={
-                            <PrivateRoute adminOnly>
-                              <AdminEditProduct />
-                            </PrivateRoute>
-                          }
-                        />
-
-                        {/* 404 */}
-                        <Route path="*" element={<NotFound />} />
-
-                      </Routes>
-
-                    </Suspense>
-                  </main>
-
-                  <Footer />
-
-                </div>
-              </Router>
-
-            </CartProvider>
-          </AuthProvider>
-        </ToastProvider>
-    </ErrorBoundary>
+        </OrdersProvider>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 

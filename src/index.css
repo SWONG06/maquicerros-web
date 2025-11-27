@@ -1,19 +1,32 @@
-/* Importa Tailwind */
+/* ======================= */
+/*     TAILWIND IMPORT     */
+/* ======================= */
 @import "tailwindcss";
 
-/* ESTILOS GLOBALES */
+/* ======================= */
+/*     VARIABLES GLOBALES  */
+/* ======================= */
 @layer base {
+  :root {
+    --yellow-main: #F6C400;   /* Amarillo Maquicerros */
+    --yellow-light: #FFD83B;  /* Hover */
+    --black-main: #0D0D0D;    /* Fondo oscuro */
+    --black-soft: #1A1A1A;    /* Superficies */
+    --gray-text: #EAEAEA;     /* Texto */
+  }
+
   html {
     @apply scroll-smooth;
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300;
+    background-color: var(--black-main);
+    color: var(--gray-text);
+    @apply transition-colors duration-300;
   }
 
-  /* Mejor tipografía */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold;
+    @apply font-bold tracking-wide;
   }
 
   a {
@@ -21,34 +34,59 @@
   }
 }
 
-/* COMPONENTES GLOBALES */
+/* ======================= */
+/*      COMPONENTES        */
+/* ======================= */
+
 @layer components {
+  /* Tarjetas */
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 transition-colors duration-300;
+    background-color: var(--black-soft);
+    @apply rounded-xl shadow-xl p-5 border border-[#F6C400]/20;
   }
 
+  /* Inputs */
   .input {
-    @apply w-full px-4 py-2 rounded-lg border border-gray-300
-           dark:border-gray-600 bg-white dark:bg-gray-800
-           text-gray-900 dark:text-gray-100
-           focus:ring-2 focus:ring-orange-500 focus:outline-none;
+    background: var(--black-soft);
+    border: 1px solid #333;
+    color: var(--gray-text);
+    @apply px-4 py-2 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-[#F6C400];
   }
 
+  /* Botón amarillo primario */
   .btn-primary {
-    @apply px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 
-           text-white font-semibold transition;
+    background-color: var(--yellow-main);
+    color: #000;
+    @apply px-4 py-3 rounded-lg font-semibold text-center transition-transform hover:scale-105;
   }
 
+  /* Botón negro con borde amarillo */
   .btn-secondary {
-    @apply px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300
-           dark:bg-gray-700 dark:hover:bg-gray-600
-           text-gray-900 dark:text-gray-100 transition;
+    background-color: var(--black-main);
+    border: 2px solid var(--yellow-main);
+    color: var(--yellow-main);
+    @apply px-4 py-3 rounded-lg font-semibold transition-all hover:bg-yellow-400 hover:text-black;
   }
 }
 
-/* UTILIDADES EXTRA */
+/* ======================= */
+/*     UTILIDADES EXTRA    */
+/* ======================= */
+
 @layer utilities {
-  .shadow-soft {
-    @apply shadow-lg shadow-black/5 dark:shadow-black/20;
+  .text-yellow-main {
+    color: var(--yellow-main);
+  }
+
+  .bg-yellow-main {
+    background-color: var(--yellow-main);
+  }
+
+  .bg-black-main {
+    background-color: var(--black-main);
+  }
+
+  .shadow-yellow {
+    box-shadow: 0 0 10px #F6C40055;
   }
 }

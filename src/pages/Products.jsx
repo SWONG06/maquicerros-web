@@ -1,123 +1,85 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
 
-const Productos = () => {
+const Products = () => {
   const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("all");
-  const [priceFilter, setPriceFilter] = useState("all");
+  const [filtered, setFiltered] = useState([]);
 
-  const location = useLocation();
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const load = async () => {
       const res = await fetch("/mock/products.json");
       const data = await res.json();
+
       setProducts(data);
+      setFiltered(data);
     };
-    fetchProducts();
+    load();
   }, []);
 
-  // 📌 Leer categoría desde la URL
+  // 🔍 Búsqueda
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const cat = params.get("cat");
+    let result = products;
 
-    if (cat) {
-      setCategory(cat);
+    if (search.trim() !== "") {
+      result = result.filter((p) =>
+        p.name.toLowerCase().includes(search.toLowerCase())
+      );
     }
-  }, [location.search]);
 
-  const filtered = products.filter((product) => {
-    const matchesSearch = product.name
-      .toLowerCase()
-      .includes(search.toLowerCase());
-
-    const matchesCategory =
-      category === "all" || product.category === category;
-
-    const matchesPrice =
-      priceFilter === "all"
-        ? true
-        : priceFilter === "low"
-        ? product.price <= 300
-        : priceFilter === "mid"
-        ? product.price > 300 && product.price <= 800
-        : product.price > 800;
-
-    return matchesSearch && matchesCategory && matchesPrice;
-  });
-
-  const resetFilters = () => {
-    setSearch("");
-    setCategory("all");
-    setPriceFilter("all");
-  };
+    setFiltered(result);
+  }, [search, products]);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-10 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-[#0D0D0D] text-gray-200 pb-20">
 
-        {/* TÍTULO */}
-        <h1 className="text-3xl md:text-4xl font-extrabold text-center text-gray-900 dark:text-white">
+      {/* 💛 HEADER */}
+      <section className="py-16 text-center bg-linear-to-r from-black via-[#1A1A1A] to-black 
+                          border-b border-yellow-500/40 shadow-lg shadow-yellow-500/10">
+        <h1 className="text-5xl font-extrabold text-yellow-400 drop-shadow-[0_0_10px_rgba(246,196,0,0.3)]">
           Catálogo de Productos
         </h1>
-        <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
-          Filtra por categoría, precio o usa el buscador.
+        <p className="text-gray-400 mt-3 text-lg">
+          Explora nuestra maquinaria y herramientas profesionales.
         </p>
 
-        {/* FILTROS */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg mb-10">
-          <input
-            type="text"
-            placeholder="🔍 Buscar productos..."
-            className="w-full px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white mb-4"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <select
-              className="px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
+        {/* 🔍 BUSCADOR */}
+        <div className="mt-10 flex justify-center">
+          <div className="flex bg-[#1A1A1A] border border-yellow-500/40 rounded-lg p-2 
+                          shadow-yellow-500/20 w-full max-w-xl">
+            <input
+              placeholder="Buscar productos..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="flex-1 px-4 py-2 bg-transparent text-yellow-400 placeholder-gray-500 outline-none"
+            />
+            <button
+              className="px-5 py-2 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-md transition-all"
             >
-              <option value="all">Todas las categorías</option>
-              <option value="electricas">Herramientas eléctricas</option>
-              <option value="maquinaria">Maquinaria pesada</option>
-              <option value="accesorios">Accesorios y repuestos</option>
-            </select>
-
-            <select
-              className="px-4 py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-              value={priceFilter}
-              onChange={(e) => setPriceFilter(e.target.value)}
-            >
-              <option value="all">Todos los precios</option>
-              <option value="low">Hasta S/300</option>
-              <option value="mid">S/300 a S/800</option>
-              <option value="high">Más de S/800</option>
-            </select>
+              Buscar
+            </button>
           </div>
-
-          <button
-            onClick={resetFilters}
-            className="w-full mt-4 bg-orange-600 hover:bg-orange-500 text-white py-3 rounded-xl font-semibold"
-          >
-            Limpiar filtros
-          </button>
         </div>
+      </section>
 
-        {/* PRODUCTOS */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filtered.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      </div>
+      {/* GRID DE PRODUCTOS */}
+      <section className="max-w-7xl mx-auto px-6 mt-16">
+        {filtered.length === 0 ? (
+          <p className="text-center text-gray-400 text-lg mt-20">
+            No se encontraron productos.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            {filtered.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+      </section>
+
     </div>
   );
 };
 
-export default Productos;
+export default Products;

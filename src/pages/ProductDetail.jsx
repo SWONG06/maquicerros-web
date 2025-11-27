@@ -1,112 +1,149 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
-import { useToast } from "../context/ToastContext";
-import Loading from "../components/Loading";
-import { formatPrice } from "../utils/currency";
+import ProductCard from "../components/ProductCard";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
-  const { success, error } = useToast();
-  const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [allProducts, setAllProducts] = useState([]);
+  const [mainImage, setMainImage] = useState("");
 
   useEffect(() => {
-    const loadProduct = async () => {
-      try {
-        const res = await fetch("/mock/products.json");
-        const data = await res.json();
+    const load = async () => {
+      const res = await fetch("/mock/products.json");
+      const data = await res.json();
 
-        // Buscar por ID independientemente si es número o string
-        const found = data.find(p => String(p.id) === String(id));
-        setProduct(found || null);
-      } catch (err) {
-        console.error("Error al cargar producto:", err);
-      } finally {
-        setLoading(false);
-      }
+      setAllProducts(data);
+
+      const p = data.find((x) => x.id === Number(id));
+      setProduct(p);
+
+      setMainImage(p?.imageUrl || p?.image);
     };
 
-    loadProduct();
+    load();
   }, [id]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <Loading text="Cargando producto..." />
-      </div>
-    );
-  }
 
   if (!product) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
-        <p className="text-red-500 text-lg mb-4">Producto no encontrado.</p>
-        <button
-          onClick={() => navigate("/productos")}
-          className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90"
-        >
-          Volver a productos
-        </button>
+      <div className="min-h-screen flex justify-center items-center text-yellow-400 text-xl">
+        Cargando producto...
       </div>
     );
   }
 
-  const handleAddToCart = () => {
-    if (product.stock <= 0) {
-      error("Producto sin stock disponible");
-      return;
-    }
-
-    addToCart({
-      ...product,
-      imageUrl: product.imageUrl || product.image || product.img,
-    });
-
-    success(`${product.name} agregado al carrito`);
-  };
+  const related = allProducts
+    .filter((p) => p.category === product.category && p.id !== product.id)
+    .slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-16 px-6">
-      <div className="max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 grid grid-cols-1 lg:grid-cols-2 gap-12">
+    <div className="bg-[#0B0B0B] min-h-screen text-gray-200 pt-24 pb-32 px-6">
 
-        <div className="w-full flex items-center justify-center">
-          <img
-            src={product.imageUrl || product.image || product.img || "/placeholder-product.jpg"}
-            alt={product.name}
-            className="rounded-xl shadow-md object-cover w-full max-h-[500px]"
-          />
+      {/* Breadcrumb */}
+      <div className="max-w-6xl mx-auto mb-10 text-sm text-gray-400">
+        <Link to="/" className="hover:text-yellow-400">
+          Inicio
+        </Link>{" "}
+        /{" "}
+        <Link to="/productos" className="hover:text-yellow-400">
+          Productos
+        </Link>{" "}
+        /{" "}
+        <span className="text-yellow-400 font-semibold">{product.name}</span>
+      </div>
+
+      {/* Product Detail */}
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
+
+        {/* IMAGENES */}
+        <div>
+          {/* Imagen Principal */}
+          <div className="w-full h-[420px] bg-[#111] rounded-xl overflow-hidden shadow-[0_0_20px_rgba(246,196,0,0.1)]">
+            <img
+              src={mainImage}
+              alt={product.name}
+              className="w-full h-full object-cover cursor-zoom-in hover:scale-110 transition-transform duration-500"
+            />
+          </div>
+
+          {/* Miniaturas */}
+          <div className="flex gap-4 mt-4">
+            {[product.imageUrl, product.image2, product.image3]
+              .filter(Boolean)
+              .map((img, idx) => (
+                <img
+                  key={idx}
+                  src={img}
+                  alt="thumb"
+                  className={`
+                    w-20 h-20 rounded-md object-cover cursor-pointer
+                    border ${
+                      mainImage === img
+                        ? "border-yellow-400"
+                        : "border-transparent"
+                    }
+                    hover:opacity-80 transition
+                  `}
+                  onClick={() => setMainImage(img)}
+                />
+              ))}
+          </div>
         </div>
 
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            {product.name}
-          </h1>
+        {/* Información */}
+        <div className="flex flex-col justify-between">
+          <div>
+            <h1 className="text-4xl font-extrabold text-yellow-400 drop-shadow-sm">
+              {product.name}
+            </h1>
 
-          <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg">
-            {product.description}
-          </p>
+            <p className="text-gray-400 mt-4 leading-relaxed">
+              {product.description}
+            </p>
 
-          <p className="text-xl text-gray-700 dark:text-gray-200 mb-4">
-            Stock: <span className="font-semibold">{product.stock}</span>
-          </p>
+            <p className="text-4xl font-bold text-yellow-400 drop-shadow-md mt-6">
+              S/ {product.price.toFixed(2)}
+            </p>
+          </div>
 
-          <p className="text-4xl font-extrabold text-orange-600 mb-6">
-            {formatPrice(product.price)}
-          </p>
-
+          {/* CTA */}
           <button
-            onClick={handleAddToCart}
-            disabled={product.stock <= 0}
-            className="w-full px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-lg font-semibold shadow-md disabled:bg-gray-400"
+            onClick={() => addToCart(product)}
+            className="
+              mt-10 
+              bg-yellow-500 
+              hover:bg-yellow-400 
+              text-black 
+              font-bold 
+              py-4 
+              rounded-xl 
+              text-lg
+              transition-all
+              shadow-[0_0_15px_rgba(246,196,0,0.3)]
+            "
           >
-            {product.stock <= 0 ? "Sin stock" : "Agregar al carrito"}
+            Agregar al carrito
           </button>
         </div>
       </div>
+
+      {/* Productos relacionados */}
+      {related.length > 0 && (
+        <div className="max-w-6xl mx-auto mt-24">
+          <h2 className="text-3xl font-bold text-yellow-400 mb-8">
+            También te puede interesar
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {related.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

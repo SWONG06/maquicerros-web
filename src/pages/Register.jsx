@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const { register } = useAuth();
@@ -10,87 +10,73 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
-    confirm: "",
   });
 
   const [error, setError] = useState("");
 
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (form.password !== form.confirm) {
-      return setError("Las contraseñas no coinciden");
-    }
+    if (!form.name.trim()) return setError("Ingrese un nombre válido.");
 
-    const res = register(form.name, form.email, form.password);
-
-    if (!res.success) {
-      return setError(res.message);
-    }
-
-    navigate("/login");
+    register(form);
+    navigate("/perfil");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl w-full max-w-md">
+    <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center px-4">
+      <div className="bg-[#1A1A1A] border border-yellow-500/40 p-10 rounded-xl shadow-lg w-full max-w-md text-white">
 
-        <h2 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">
+        <h1 className="text-3xl font-bold text-center text-yellow-400 mb-6">
           Crear Cuenta
-        </h2>
+        </h1>
 
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <label>Nombre</label>
+            <input
+              type="text"
+              name="name"
+              onChange={handleChange}
+              className="input"
+              required
+            />
+          </div>
 
-          <input
-            type="text"
-            placeholder="Nombre completo"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white outline-none"
-            required
-          />
+          <div>
+            <label>Correo</label>
+            <input
+              type="email"
+              name="email"
+              onChange={handleChange}
+              className="input"
+              required
+            />
+          </div>
 
-          <input
-            type="email"
-            placeholder="Correo"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white outline-none"
-            required
-          />
+          <div>
+            <label>Contraseña</label>
+            <input
+              type="password"
+              name="password"
+              onChange={handleChange}
+              className="input"
+              required
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white outline-none"
-            required
-          />
-
-          <input
-            type="password"
-            placeholder="Confirmar contraseña"
-            value={form.confirm}
-            onChange={(e) => setForm({ ...form, confirm: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white outline-none"
-            required
-          />
-
-          <button
-            type="submit"
-            className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg"
-          >
-            Registrarse
-          </button>
+          <button className="btn-primary w-full">Registrarme</button>
         </form>
 
-        <p className="text-center text-gray-600 dark:text-gray-300 mt-4">
-          ¿Ya tienes cuenta?{" "}
-          <Link to="/login" className="text-orange-500 font-semibold">
-            Iniciar sesión
+        <p className="mt-4 text-center text-gray-400">
+          ¿Ya tienes una cuenta?{" "}
+          <Link to="/login" className="text-yellow-400 hover:underline">
+            Inicia sesión
           </Link>
         </p>
 

@@ -1,81 +1,89 @@
-import { useEffect, useState } from "react";
-import { formatPrice } from "../utils/currency";
+import { useOrders } from "../context/OrdersContext";
+import { ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 
 const AdminOrders = () => {
-  const [orders, setOrders] = useState([]);
-
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("orders_sim")) || [];
-    setOrders(saved);
-  }, []);
+  const { orders } = useOrders();
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-10">
-      <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-10">
-        Panel de Pedidos (Admin)
-      </h1>
+    <div className="min-h-screen bg-[#0D0D0D] py-16 px-6">
+      
+      {/* TÍTULO */}
+      <div className="max-w-6xl mx-auto mb-10 flex items-center gap-3">
+        <ClipboardDocumentListIcon className="w-10 h-10 text-yellow-400 drop-shadow" />
+        <h1 className="text-4xl font-extrabold text-yellow-400 drop-shadow">
+          Administración de Pedidos
+        </h1>
+      </div>
 
+      {/* SIN PEDIDOS */}
       {orders.length === 0 ? (
-        <p className="text-gray-600 dark:text-gray-300">
-          No hay pedidos registrados.
+        <p className="text-center text-gray-400 text-lg mt-20">
+          No hay pedidos registrados aún.
         </p>
       ) : (
-        <div className="space-y-6">
-          {orders.map((order) => (
-            <div
-              key={order.id}
-              className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
-            >
-              <div className="flex justify-between items-center">
-                <h2 className="font-bold text-xl text-gray-900 dark:text-white">
-                  Pedido #{order.id}
-                </h2>
+        <div className="max-w-6xl mx-auto overflow-x-auto rounded-xl border border-yellow-500/30 shadow-lg shadow-black/40">
+          
+          {/* TABLA */}
+          <table className="w-full bg-[#1A1A1A] text-gray-300">
+            <thead className="bg-[#111] border-b border-yellow-500/40">
+              <tr>
+                <th className="py-4 px-4 text-left text-yellow-400">ID</th>
+                <th className="py-4 px-4 text-left text-yellow-400">Cliente</th>
+                <th className="py-4 px-4 text-left text-yellow-400">Total</th>
+                <th className="py-4 px-4 text-left text-yellow-400">Método Pago</th>
+                <th className="py-4 px-4 text-left text-yellow-400">Fecha</th>
+                <th className="py-4 px-4 text-left text-yellow-400">Ver</th>
+              </tr>
+            </thead>
 
-                <span
-                  className={`px-4 py-1 rounded-full text-sm font-semibold ${
-                    order.status === "created"
-                      ? "bg-yellow-500/20 text-yellow-600"
-                      : "bg-green-500/20 text-green-700"
-                  }`}
+            <tbody>
+              {orders.map((order) => (
+                <tr
+                  key={order.id}
+                  className="border-b border-gray-700 hover:bg-[#2A2A2A] transition"
                 >
-                  {order.status === "created" ? "Pendiente" : "Completado"}
-                </span>
-              </div>
+                  <td className="py-4 px-4 font-semibold text-yellow-400">
+                    #{order.id}
+                  </td>
 
-              <p className="text-sm text-gray-500 mt-1">
-                {new Date(order.date).toLocaleString()}
-              </p>
+                  <td className="py-4 px-4">
+                    {order.customer?.name}<br />
+                    <span className="text-gray-400 text-sm">{order.customer?.email}</span>
+                  </td>
 
-              {/* Items */}
-              <div className="mt-4 space-y-2">
-                {order.items.map((item) => (
-                  <div
-                    key={item.productId}
-                    className="flex justify-between text-gray-900 dark:text-gray-200"
-                  >
-                    <span>
-                      {item.name} x {item.quantity}
-                    </span>
-                    <span>{formatPrice(item.price * item.quantity)}</span>
-                  </div>
-                ))}
-              </div>
+                  <td className="py-4 px-4 font-bold text-yellow-400">
+                    S/ {order.total.toFixed(2)}
+                  </td>
 
-              <div className="border-t pt-4 mt-4 flex justify-between font-semibold text-lg">
-                <span>Total:</span>
-                <span className="text-orange-600">
-                  {formatPrice(order.total)}
-                </span>
-              </div>
+                  <td className="py-4 px-4 capitalize">
+                    {order.paymentMethod}
+                  </td>
 
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                Método de pago:{" "}
-                <span className="font-semibold capitalize">
-                  {order.paymentMethod}
-                </span>
-              </p>
-            </div>
-          ))}
+                  <td className="py-4 px-4 text-sm">
+                    {new Date(order.date).toLocaleString()}
+                  </td>
+
+                  <td className="py-4 px-4">
+                    <button
+                      className="
+                        bg-yellow-500 
+                        hover:bg-yellow-400 
+                        text-black 
+                        font-semibold 
+                        px-4 py-2 
+                        rounded-lg 
+                        transition
+                      "
+                      onClick={() => alert(JSON.stringify(order, null, 2))}
+                    >
+                      Ver más
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+
+          </table>
         </div>
       )}
     </div>

@@ -1,171 +1,142 @@
-import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
+import { useOrders } from "../context/OrdersContext";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { formatPrice } from "../utils/currency";
+import { useState } from "react";
 
 const Checkout = () => {
   const { cart, total, clearCart } = useCart();
-  const { user } = useAuth();
+  const { addOrder } = useOrders();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    fullname: "",
-    phone: "",
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
     address: "",
-    paymentMethod: "yape",
+    paymentMethod: "tarjeta",
   });
 
-  useEffect(() => {
-    if (!user) navigate("/login");
-    if (cart.length === 0) navigate("/carrito");
-  }, [user, cart, navigate]);
+  const [error, setError] = useState("");
 
-  const handleSubmit = () => {
-    if (!form.fullname || !form.phone || !form.address) {
-      alert("Por favor completa todos los campos");
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.address) {
+      setError("Por favor completa todos los campos.");
       return;
     }
 
-    // 🧾 Crear pedido simulado
     const newOrder = {
       id: Date.now(),
-      userId: user.id,
-      items: cart.map((i) => ({
-        productId: i.id,
-        name: i.name,
-        price: i.price,
-        quantity: i.quantity,
-      })),
-      total,
-      status: "created",
       date: new Date().toISOString(),
-      paymentMethod: form.paymentMethod,
+      items: cart,
+      total,
+      customer: formData,
+      address: formData.address,
+      paymentMethod: formData.paymentMethod,
     };
 
-    // Guardar pedido
-    const orders = JSON.parse(localStorage.getItem("orders_sim")) || [];
-    orders.push(newOrder);
-    localStorage.setItem("orders_sim", JSON.stringify(orders));
-
+    addOrder(newOrder);
     clearCart();
 
-    navigate(`/checkout/success?id=${newOrder.id}`);
+    navigate("/pedido-exitoso");
   };
 
+  if (cart.length === 0) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-yellow-400 text-xl">
+        Tu carrito está vacío 🛒
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-12 px-6">
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+    <div className="min-h-screen bg-[#0D0D0D] text-yellow-400 py-16 px-6">
+      <div className="max-w-5xl mx-auto bg-[#1A1A1A] border border-yellow-500/30 p-8 rounded-xl shadow-xl">
 
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-          Finalizar compra
-        </h1>
+        <h1 className="text-3xl font-bold mb-8">🧾 Finalizar compra</h1>
 
-        {/* FORM */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          
+          {/* Formulario */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block mb-1 font-semibold">Nombre completo</label>
+              <input
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full bg-black border border-yellow-500/40 rounded-md px-4 py-2 text-yellow-400 outline-none focus:ring-2 focus:ring-yellow-400"
+              />
+            </div>
 
+            <div>
+              <label className="block mb-1 font-semibold">Correo electrónico</label>
+              <input
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full bg-black border border-yellow-500/40 rounded-md px-4 py-2 text-yellow-400 outline-none focus:ring-2 focus:ring-yellow-400"
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1 font-semibold">Dirección</label>
+              <input
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                className="w-full bg-black border border-yellow-500/40 rounded-md px-4 py-2 text-yellow-400 outline-none focus:ring-2 focus:ring-yellow-400"
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1 font-semibold">Método de pago</label>
+              <select
+                name="paymentMethod"
+                value={formData.paymentMethod}
+                onChange={handleChange}
+                className="w-full bg-black border border-yellow-500/40 text-yellow-400 rounded-md px-4 py-2 outline-none"
+              >
+                <option value="tarjeta">Tarjeta</option>
+                <option value="yape">Yape / Plin</option>
+                <option value="transferencia">Transferencia bancaria</option>
+              </select>
+            </div>
+
+            {error && (
+              <p className="text-red-500 font-semibold text-sm">{error}</p>
+            )}
+
+            <button className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3 rounded-lg shadow-lg transition-all">
+              Realizar pedido
+            </button>
+
+          </form>
+
+          {/* Resumen */}
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              Datos de entrega
-            </h2>
+            <h2 className="text-xl font-bold mb-4">Resumen del pedido</h2>
 
-            <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Nombre completo"
-                className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                value={form.fullname}
-                onChange={(e) => setForm({ ...form, fullname: e.target.value })}
-              />
-
-              <input
-                type="text"
-                placeholder="Teléfono"
-                className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-              />
-
-              <textarea
-                placeholder="Dirección completa"
-                className="w-full p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                rows={3}
-                value={form.address}
-                onChange={(e) => setForm({ ...form, address: e.target.value })}
-              />
-            </div>
-
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4">
-              Método de pago
-            </h2>
-
-            <div className="space-y-3">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="payment"
-                  value="yape"
-                  checked={form.paymentMethod === "yape"}
-                  onChange={() => setForm({ ...form, paymentMethod: "yape" })}
-                />
-                Yape
-              </label>
-
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="payment"
-                  value="plin"
-                  checked={form.paymentMethod === "plin"}
-                  onChange={() => setForm({ ...form, paymentMethod: "plin" })}
-                />
-                Plin
-              </label>
-
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="radio"
-                  name="payment"
-                  value="card"
-                  checked={form.paymentMethod === "card"}
-                  onChange={() => setForm({ ...form, paymentMethod: "card" })}
-                />
-                Tarjeta (simulado)
-              </label>
-            </div>
-          </div>
-
-          {/* RESUMEN */}
-          <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              Resumen de compra
-            </h2>
-
-            <div className="space-y-3 mb-6">
+            <div className="divide-y divide-yellow-500/20">
               {cart.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex justify-between text-gray-800 dark:text-gray-200"
-                >
-                  <span>
-                    {item.name} x {item.quantity}
-                  </span>
-                  <span>{formatPrice(item.price * item.quantity)}</span>
+                <div className="py-3 flex justify-between" key={item.id}>
+                  <span>{item.name} x{item.quantity}</span>
+                  <span>S/ {(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               ))}
             </div>
 
-            <div className="text-xl font-bold flex justify-between">
-              <span>Total:</span>
-              <span className="text-orange-600">{formatPrice(total)}</span>
+            <div className="mt-6 pt-4 border-t border-yellow-500/30">
+              <p className="text-xl font-bold flex justify-between">
+                <span>Total:</span>
+                <span>S/ {total.toFixed(2)}</span>
+              </p>
             </div>
-
-            <button
-              onClick={handleSubmit}
-              className="w-full mt-6 bg-orange-600 hover:bg-orange-500 text-white p-3 rounded-lg font-semibold"
-            >
-              Confirmar pedido
-            </button>
           </div>
 
         </div>

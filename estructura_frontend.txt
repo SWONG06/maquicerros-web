@@ -1,0 +1,36 @@
+Listado de rutas de carpetas para el volumen TOSHIBA EXT
+El número de serie del volumen es 80E2-186B
+D:\MAQUICERROS-WEB\SRC
+¦   App.css
+¦   App.jsx
+¦   index.css
+¦   main.jsx
+¦   
++---assets
+¦       react.svg
+¦       
++---components
+¦       CartItem.jsx
+¦       CategoryCard.jsx
+¦       Footer.jsx
+¦       Navbar.jsx
+¦       ProductCard.jsx
+¦       
++---context
+¦       AuthContext.jsx
+¦       CartContext.jsx
+¦       ThemeContext.jsx
+¦       
++---pages
+¦       Cart.jsx
+¦       Checkout.jsx
+¦       Home.jsx
+¦       Login.jsx
+¦       Orders.jsx
+¦       Products.jsx
+¦       Register.jsx
+¦       
++---services
+        api.js
+        products.js
+        

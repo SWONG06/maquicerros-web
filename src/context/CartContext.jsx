@@ -5,18 +5,13 @@ const initialState = {
   cart: JSON.parse(localStorage.getItem("cart")) || [],
 };
 
-// Reducer
+// Reducer para manejar acciones del carrito
 function cartReducer(state, action) {
   switch (action.type) {
-    case "LOAD_CART":
-      return { cart: action.payload };
-
     case "ADD_TO_CART": {
-      const exists = state.cart.find((i) => i.id === action.payload.id);
-
+      const existing = state.cart.find((item) => item.id === action.payload.id);
       let updatedCart;
-
-      if (exists) {
+      if (existing) {
         updatedCart = state.cart.map((item) =>
           item.id === action.payload.id
             ? { ...item, quantity: item.quantity + 1 }
@@ -25,13 +20,14 @@ function cartReducer(state, action) {
       } else {
         updatedCart = [...state.cart, { ...action.payload, quantity: 1 }];
       }
-
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       return { cart: updatedCart };
     }
 
     case "REMOVE_FROM_CART": {
-      const updatedCart = state.cart.filter((i) => i.id !== action.payload);
+      const updatedCart = state.cart.filter(
+        (item) => item.id !== action.payload
+      );
       localStorage.setItem("cart", JSON.stringify(updatedCart));
       return { cart: updatedCart };
     }
@@ -60,39 +56,34 @@ const CartContext = createContext();
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
 
-  // Cargar carrito guardado al inicio
+  // Sincroniza con localStorage cada vez que cambia
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("cart")) || [];
-    dispatch({ type: "LOAD_CART", payload: saved });
-  }, []);
+    localStorage.setItem("cart", JSON.stringify(state.cart));
+  }, [state.cart]);
 
-  // ACCIONES
-  const addToCart = (product) => {
+  // 🔹 Acciones
+  const addToCart = (product) =>
     dispatch({ type: "ADD_TO_CART", payload: product });
-  };
 
-  const removeFromCart = (id) => {
+  const removeFromCart = (id) =>
     dispatch({ type: "REMOVE_FROM_CART", payload: id });
-  };
 
-  const updateQuantity = (id, quantity) => {
+  const updateQuantity = (id, quantity) =>
     dispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
-  };
 
-  const clearCart = () => {
-    dispatch({ type: "CLEAR_CART" });
-  };
+  const clearCart = () => dispatch({ type: "CLEAR_CART" });
 
-  // CALCULOS — soporta tanto "precio" como "price"
+  // 🔹 Calcular total general
   const total = state.cart.reduce(
-    (acc, item) =>
-      acc + (item.precio || item.price || 0) * item.quantity,
+    (acc, item) => acc + item.price * item.quantity,
     0
   );
 
+  // 🔹 Contar cantidad total de productos
   const getItemCount = () =>
-    state.cart.reduce((acc, i) => acc + i.quantity, 0);
+    state.cart.reduce((acc, item) => acc + item.quantity, 0);
 
+  // 🔹 Exportar contexto
   return (
     <CartContext.Provider
       value={{
@@ -102,7 +93,7 @@ export const CartProvider = ({ children }) => {
         updateQuantity,
         clearCart,
         total,
-        getItemCount,
+        getItemCount, // ✅ agregado aquí
       }}
     >
       {children}

@@ -1,80 +1,55 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
-// KEY para LocalStorage
-const AUTH_KEY = "maquicerros_users";
-const SESSION_KEY = "maquicerros_session";
-
-export const AuthContext = createContext();
-export const useAuth = () => useContext(AuthContext);
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // Cargar sesión guardada
+  // Cargar usuario guardado al iniciar
   useEffect(() => {
-    const savedSession = localStorage.getItem(SESSION_KEY);
-    if (savedSession) {
-      setUser(JSON.parse(savedSession));
-    }
+    const saved = localStorage.getItem("maqui_user");
+    if (saved) setUser(JSON.parse(saved));
   }, []);
 
-  // 🔐 Registrar usuario
-  const register = (name, email, password) => {
-    let users = JSON.parse(localStorage.getItem(AUTH_KEY)) || [];
-
-    // Verificar si existe
-    if (users.some((u) => u.email === email)) {
-      return { success: false, message: "El correo ya está registrado" };
-    }
-
-    // Crear usuario
+  // Registrar usuario
+  const register = ({ name, email, password }) => {
     const newUser = {
-      id: Date.now(),
       name,
       email,
-      password, // Simple por simulación
+      password,
+      createdAt: new Date().toLocaleDateString(),
     };
 
-    users.push(newUser);
-    localStorage.setItem(AUTH_KEY, JSON.stringify(users));
-
-    return { success: true };
+    localStorage.setItem("maqui_user", JSON.stringify(newUser));
+    setUser(newUser);
   };
 
-  // 🔐 Login
-  const login = (email, password) => {
-    const users = JSON.parse(localStorage.getItem(AUTH_KEY)) || [];
+  // Login
+  const login = ({ email, password }) => {
+    const saved = localStorage.getItem("maqui_user");
 
-    const exists = users.find(
-      (u) => u.email === email && u.password === password
-    );
+    if (!saved) return { ok: false, msg: "No existe ninguna cuenta." };
 
-    if (!exists) {
-      return { success: false, message: "Credenciales incorrectas" };
+    const data = JSON.parse(saved);
+
+    if (data.email === email && data.password === password) {
+      setUser(data);
+      return { ok: true };
     }
 
-    setUser(exists);
-    localStorage.setItem(SESSION_KEY, JSON.stringify(exists));
-    return { success: true };
+    return { ok: false, msg: "Credenciales incorrectas." };
   };
 
-  // 🔐 Logout
+  // Logout
   const logout = () => {
-    localStorage.removeItem(SESSION_KEY);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        login,
-        register,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);
