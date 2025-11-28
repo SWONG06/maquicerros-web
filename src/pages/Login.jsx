@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const { login } = useAuth();
@@ -9,15 +9,14 @@ const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const res = login(form);
 
     if (!res.ok) {
-      setError(res.msg);
+      setError(res.message);
       return;
     }
 
@@ -25,23 +24,21 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center px-4">
-      <div className="bg-[#1A1A1A] border border-yellow-500/40 p-10 rounded-xl shadow-lg w-full max-w-md text-white">
+    <div className="min-h-screen flex items-center justify-center bg-[#0D0D0D] text-yellow-400 px-6">
+      <div className="bg-[#1A1A1A] p-8 rounded-xl w-full max-w-md border border-yellow-500/30">
+        <h1 className="text-3xl font-bold mb-6">Iniciar sesión</h1>
 
-        <h1 className="text-3xl font-bold text-center text-yellow-400 mb-6">
-          Iniciar Sesión
-        </h1>
-
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        {error && <p className="text-red-400 mb-3">{error}</p>}
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label>Correo</label>
+            <label>Email</label>
             <input
               type="email"
               name="email"
+              className="input w-full"
+              value={form.email}
               onChange={handleChange}
-              className="input"
               required
             />
           </div>
@@ -51,22 +48,22 @@ const Login = () => {
             <input
               type="password"
               name="password"
+              className="input w-full"
+              value={form.password}
               onChange={handleChange}
-              className="input"
               required
             />
           </div>
 
-          <button className="btn-primary w-full">Ingresar</button>
+          <button className="btn-primary w-full mt-2">Ingresar</button>
         </form>
 
-        <p className="mt-4 text-center text-gray-400">
+        <p className="mt-4 text-gray-300 text-sm text-center">
           ¿No tienes cuenta?{" "}
-          <Link to="/registro" className="text-yellow-400 hover:underline">
-            Regístrate aquí
+          <Link className="text-yellow-400 hover:underline" to="/registro">
+            Crear cuenta
           </Link>
         </p>
-
       </div>
     </div>
   );
