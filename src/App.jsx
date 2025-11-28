@@ -6,6 +6,7 @@ import { OrdersProvider } from "./context/OrdersContext";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import WhatsappButton from "./components/WhatsappButton";
 
 import Home from "./pages/Home";
 import Products from "./pages/Products";
@@ -73,6 +74,9 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<Register />} />
           </Routes>
+
+          {/* Botón flotante de WhatsApp */}
+          <WhatsappButton />
 
           <Footer />
 
