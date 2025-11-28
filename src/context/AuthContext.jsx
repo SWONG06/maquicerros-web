@@ -7,34 +7,63 @@ export const AuthProvider = ({ children }) => {
 
   // Leer usuario guardado
   useEffect(() => {
-    const savedUser = localStorage.getItem("maquicerros_user");
-    if (savedUser) setUser(JSON.parse(savedUser));
+    try {
+      const savedUser = localStorage.getItem("maquicerros_user");
+      if (savedUser) {
+        const parsed = JSON.parse(savedUser);
+        if (parsed && typeof parsed === "object") {
+          setUser(parsed);
+        }
+      }
+    } catch (err) {
+      console.error("Error leyendo usuario:", err);
+    }
   }, []);
 
   // Registrar usuario simulado
   const register = ({ name, email, password }) => {
+    if (!name || !email || !password) {
+      return { ok: false, message: "Completa todos los campos." };
+    }
+
     const newUser = { name, email, password };
+
     localStorage.setItem("maquicerros_user", JSON.stringify(newUser));
     setUser(newUser);
+
+    return { ok: true };
   };
 
   // Login simulado
   const login = ({ email, password }) => {
-    const saved = localStorage.getItem("maquicerros_user");
-    if (!saved) return { ok: false, message: "No existe un usuario registrado." };
+    try {
+      const saved = localStorage.getItem("maquicerros_user");
 
-    const userObj = JSON.parse(saved);
+      if (!saved) {
+        return { ok: false, message: "No existe un usuario registrado." };
+      }
 
-    if (userObj.email !== email || userObj.password !== password) {
-      return { ok: false, message: "Credenciales incorrectas." };
+      const userObj = JSON.parse(saved);
+
+      if (!userObj || typeof userObj !== "object") {
+        return { ok: false, message: "Usuario corrupto o inválido." };
+      }
+
+      if (userObj.email !== email || userObj.password !== password) {
+        return { ok: false, message: "Credenciales incorrectas." };
+      }
+
+      setUser(userObj);
+      return { ok: true };
+    } catch (err) {
+      console.error("Error en login:", err);
+      return { ok: false, message: "Error inesperado en login." };
     }
-
-    setUser(userObj);
-    return { ok: true };
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem("maquicerros_user");
   };
 
   return (

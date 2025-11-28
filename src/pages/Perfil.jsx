@@ -1,7 +1,13 @@
 import { useAuth } from "../context/AuthContext";
+import { Navigate } from "react-router-dom";
 
 const Perfil = () => {
   const { user, logout } = useAuth();
+
+  // Si no hay usuario, prevenir errores
+  if (!user || typeof user !== "object") {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#0D0D0D] text-yellow-400 px-6">
