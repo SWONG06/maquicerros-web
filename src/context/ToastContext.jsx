@@ -1,65 +1,44 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState } from "react";
 
 const ToastContext = createContext();
 
-export const useToast = () => {
-  const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error('useToast must be used within ToastProvider');
-  }
-  return context;
-};
-
 export const ToastProvider = ({ children }) => {
-  const [toasts, setToasts] = useState([]);
+  const [toast, setToast] = useState({
+    message: "",
+    visible: false,
+  });
 
-  const addToast = useCallback((message, type = 'info') => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
+  const showToast = (message) => {
+    setToast({ message, visible: true });
 
+    // Ocultar automáticamente en 2.5s
     setTimeout(() => {
-      setToasts((prev) => prev.filter((toast) => toast.id !== id));
-    }, 3000);
-  }, []);
-
-  const success = useCallback((message) => addToast(message, 'success'), [addToast]);
-  const error = useCallback((message) => addToast(message, 'error'), [addToast]);
-  const info = useCallback((message) => addToast(message, 'info'), [addToast]);
-  const warning = useCallback((message) => addToast(message, 'warning'), [addToast]);
+      setToast({ message: "", visible: false });
+    }, 2500);
+  };
 
   return (
-    <ToastContext.Provider value={{ success, error, info, warning }}>
+    <ToastContext.Provider value={{ showToast }}>
       {children}
-      <div className="fixed top-4 right-4 z-50 space-y-2">
-        {toasts.map((toast) => (
-          <Toast key={toast.id} message={toast.message} type={toast.type} />
-        ))}
-      </div>
+
+      {/* 🍞 TOAST VISUAL */}
+      {toast.visible && (
+        <div
+          className="
+            fixed bottom-6 left-1/2 -translate-x-1/2
+            bg-yellow-500 text-black font-bold
+            px-6 py-3 rounded-xl shadow-xl
+            border border-black/30 
+            animate-fadeInUp
+            z-50
+          "
+        >
+          {toast.message}
+        </div>
+      )}
     </ToastContext.Provider>
   );
 };
 
-const Toast = ({ message, type }) => {
-  const bgColors = {
-    success: 'bg-green-500',
-    error: 'bg-red-500',
-    warning: 'bg-yellow-500',
-    info: 'bg-blue-500',
-  };
-
-  const icons = {
-    success: '✓',
-    error: '✕',
-    warning: '⚠',
-    info: 'ℹ',
-  };
-
-  return (
-    <div
-      className={`${bgColors[type]} text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-2 animate-slide-in-right min-w-[300px]`}
-    >
-      <span className="text-xl font-bold">{icons[type]}</span>
-      <span>{message}</span>
-    </div>
-  );
-};
+// ✅ ESTE ES EL HOOK QUE FALTABA
+export const useToast = () => useContext(ToastContext);

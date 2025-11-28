@@ -1,12 +1,17 @@
 import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { useToast } from "../context/ToastContext";  // ⬅️ IMPORTANTE
 import { ShoppingCartIcon, EyeIcon } from "@heroicons/react/24/outline";
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
+  const { showToast } = useToast(); // ⬅️ USO DEL TOAST
 
   const handleAdd = () => {
     addToCart(product);
+
+    showToast(`🛠️ Añadiendo "${product.name}" a tu carrito...`); 
+    // Mensaje elegante estilo Maquicerros
   };
 
   return (

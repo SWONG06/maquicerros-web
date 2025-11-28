@@ -3,50 +3,49 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
+  });
 
-  // Cargar usuario guardado al iniciar
+  // Guardar en localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("maqui_user");
-    if (saved) setUser(JSON.parse(saved));
-  }, []);
+    if (user) localStorage.setItem("user", JSON.stringify(user));
+    else localStorage.removeItem("user");
+  }, [user]);
 
-  // Registrar usuario
-  const register = ({ name, email, password }) => {
+  // Login falso
+  const login = (email, password) => {
+    const fakeUser = {
+      id: Date.now(),
+      name: "Usuario",
+      email,
+      createdAt: new Date(),
+    };
+    setUser(fakeUser);
+  };
+
+  // Registro falso
+  const register = (name, email, password) => {
     const newUser = {
+      id: Date.now(),
       name,
       email,
-      password,
-      createdAt: new Date().toLocaleDateString(),
+      createdAt: new Date(),
     };
-
-    localStorage.setItem("maqui_user", JSON.stringify(newUser));
     setUser(newUser);
   };
 
-  // Login
-  const login = ({ email, password }) => {
-    const saved = localStorage.getItem("maqui_user");
-
-    if (!saved) return { ok: false, msg: "No existe ninguna cuenta." };
-
-    const data = JSON.parse(saved);
-
-    if (data.email === email && data.password === password) {
-      setUser(data);
-      return { ok: true };
-    }
-
-    return { ok: false, msg: "Credenciales incorrectas." };
+  // Editar usuario
+  const updateUser = (data) => {
+    setUser((prev) => ({ ...prev, ...data }));
   };
 
   // Logout
-  const logout = () => {
-    setUser(null);
-  };
+  const logout = () => setUser(null);
 
   return (
-    <AuthContext.Provider value={{ user, register, login, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
